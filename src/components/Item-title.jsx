@@ -1,9 +1,9 @@
 import classNames from "classnames/bind";
-import style from "./Item-folder.module.scss";
+import style from "./Item-title.module.scss";
 
 const cx = classNames.bind(style);
 
-function ItemFolder({name, updated_at, parent}) {
+function ItemTitle({name, updated_at, parent}) {
   return ( 
     <div className={cx("item-folder")}>
       <i class="fa-solid fa-folder"></i>
@@ -14,4 +14,4 @@ function ItemFolder({name, updated_at, parent}) {
   );
 }
 
-export default ItemFolder;
+export default ItemTitle;
