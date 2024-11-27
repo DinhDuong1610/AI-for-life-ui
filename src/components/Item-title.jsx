@@ -5,7 +5,7 @@ const cx = classNames.bind(style);
 
 function ItemTitle({name, updated_at, parent}) {
   return ( 
-    <div className={cx("item-folder")}>
+    <div className={cx("item-title")}>
       <i class="fa-solid fa-folder"></i>
       <span className={cx("name")}>{name}</span>
       <span className={cx("updated_at")}>{updated_at}</span>

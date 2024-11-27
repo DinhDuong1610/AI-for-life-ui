@@ -6,6 +6,7 @@ import Home from '../src/pages/Home/Home';
 import Trash from '../src/pages/Trash/Trash';
 import Recent from '../src/pages/Recent/Recent';
 import Sidebar from '../src/partials/Sidebar';
+import Show from '../src/pages/Show/Show';
 
 const cx = classNames.bind(style);
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="/recent" element={<Recent />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/trash" element={<Trash />} />
+            <Route path="/show" element={<Show />} />
           </Routes>
         </div>
       </div>

@@ -3,6 +3,8 @@ import style from './Recent.module.scss';
 
 import ItemFolder from "../../components/Item-folder";
 import ItemTitle from "../../components/Item-title";
+import ItemImage from "../../components/Item-image";
+import ItemExcel from "../../components/Item-excel";
 
 const cx = classNames.bind(style);
 
@@ -23,20 +25,20 @@ function Recent() {
             Today
           </li>
           <li>
-            <ItemFolder name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
           </li>
           <li>
-            <ItemFolder name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
           </li>
           <hr></hr>
           <li>
-            <ItemFolder name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
           </li>
           <li>
-            <ItemFolder name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
           </li>
           <li>
-            <ItemFolder name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
           </li>
         </ul>
       </section>

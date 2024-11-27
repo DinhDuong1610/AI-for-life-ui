@@ -1,0 +1,21 @@
+.item-excel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  // border: 1px solid #D9D9D9;
+  border-radius: 17px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background: #EFF3F98C;
+  font-size: 20px;
+  font-weight: 500;
+
+  i {
+    color: #00bd1f;
+  }
+
+  &:hover {
+    background: #EFF3F9;
+  }
+}

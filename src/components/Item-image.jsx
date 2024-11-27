@@ -3,10 +3,13 @@ import style from "./Item-image.module.scss";
 
 const cx = classNames.bind(style);
 
-function ItemImage() {
+function ItemImage({name, updated_at, parent}) {
   return ( 
     <div className={cx("item-image")}>
-      <img src="https://images.unsplash.com/photo-1522071820081-009f5f77689e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y29tcHV0ZXJ8ZW58MHx8MHx8&w=1000&q=80" alt="anh" />
+        <i class="fa-solid fa-file-image"></i>
+        <span className={cx("name")}>{name}</span>
+        <span className={cx("updated_at")}>{updated_at}</span>
+        <span className={cx("parent")}>{parent}</span>
     </div>
    );
 }
