@@ -19,26 +19,26 @@ function Recent() {
         <h3>Recently files</h3>
         <ul>
           <li>
-            <ItemTitle name="Name" updated_at="Last edited" parent="Location" />
+            <ItemTitle name="Name" updated_at="Last edited" parent="File size" />
           </li>
           <li className={cx('today')}>
             Today
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <li>
-            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <hr></hr>
           <li>
-            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
         </ul>
       </section>

@@ -1,7 +1,6 @@
 .item-excel {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 10px 20px;
   // border: 1px solid #D9D9D9;
   border-radius: 17px;
@@ -10,9 +9,30 @@
   background: #EFF3F98C;
   font-size: 20px;
   font-weight: 500;
+  position: relative;
 
   i {
     color: #00bd1f;
+  }
+  
+  i {
+    position: absolute;
+    left: 20px;
+  }
+
+  .name {
+    position: absolute;
+    left: 100px;
+  }
+
+  .updated_at {
+    position: relative;
+    left: 600px;
+  }
+  
+  .parent {
+    position: relative;
+    left: 800px;
   }
 
   &:hover {

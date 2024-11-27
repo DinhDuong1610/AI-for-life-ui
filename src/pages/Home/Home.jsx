@@ -1,7 +1,7 @@
 import classNames from "classnames/bind";
 import style from "./Home.module.scss";
 
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
@@ -14,6 +14,8 @@ import ItemExcel from "../../components/Item-excel";
 const cx = classNames.bind(style);
 
 function Home() {
+  const navigate = useNavigate();
+
   const [folders, setFolders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,6 +61,10 @@ function Home() {
     }
   };
 
+  const handleFolderClick = (name) => {
+    navigate('/show?faculty=' + name);
+  };
+
   if(loading) {
     return <div>Loading...</div>;
   }
@@ -78,7 +84,7 @@ function Home() {
         <h3>Folders</h3>
         <ul>
           {folders.map((folder => (
-            <li key={folder.id}>{folder.name}</li>
+            <li onClick={() => handleFolderClick(folder.name)} key={folder.id}>{folder.name}</li>
           )))}
         </ul>
       </section>
@@ -87,22 +93,22 @@ function Home() {
         <h3>Recently files</h3>
         <ul>
           <li>
-            <ItemTitle name="Name" updated_at="Last edited" parent="Location" />
+            <ItemTitle name="Name" updated_at="Last edited" parent="File size" />
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <li>
-            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <li>
-            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
         </ul>
       </section>

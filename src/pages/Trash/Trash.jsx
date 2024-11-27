@@ -19,26 +19,26 @@ function Trash() {
         <h3>Trash</h3>
         <ul>
           <li>
-            <ItemTitle name="Name" updated_at="Trash date" parent="Restore" />
+            <ItemTitle name="Name" updated_at="Trash date" parent="File size" />
           </li>
           <li className={cx('today')}>
             Today
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <li>
-            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <hr></hr>
           <li>
-            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
         </ul>
       </section>

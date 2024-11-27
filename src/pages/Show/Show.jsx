@@ -2,9 +2,16 @@ import classNames from "classnames/bind";
 import style from "./Show.module.scss";
 
 import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { format } from 'date-fns';
+
+import Modal from "react-modal";
 
 import ItemFolder from "../../components/Item-folder";
 import ItemTitle from "../../components/Item-title";
+import ItemImage from "../../components/Item-image";
+import ItemExcel from "../../components/Item-excel";
 
 const cx = classNames.bind(style);
 
@@ -16,11 +23,12 @@ function Show() {
   const params = {
     faculty: queryParams.get('faculty'),
     year: queryParams.get('year'),
-    clas: queryParams.get('clas'),
+    clas: queryParams.get('class'),
     course: queryParams.get('course'),
     section: queryParams.get('section'),
   };
-  
+
+
   const order = ['faculty', 'year', 'clas', 'course', 'section'];
   
   let current = '';
@@ -30,57 +38,199 @@ function Show() {
     if (params[order[i]]) {
       current = order[i];
       next = order[i + 1] || ''; 
-      console.log(current);
+      if(next == 'clas') next = 'class';
       break;
     }
   }
 
-  const handleButtonClick = (name) => {
-    let url = '/show/?'; 
+  const [folders, setFolders] = useState([]);
+  const [excels, setExcels] = useState([]);
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [folderCurrent, setFolderCurrent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  let url = '?'; 
+  if(params.faculty) url += `faculty=${params.faculty}`;
+  if(params.year) url += `&year=${params.year}`;
+  if(params.clas) url += `&class=${params.clas}`;
+  if(params.course) url += `&course=${params.course}`;
+  if(params.section) url += `&section=${params.section}`;
 
-    if(current === 'faculty') {
-      url += `faculty=${params.faculty}&year=${name}`;
-    } else if(current === 'year') {
-      url += `faculty=${params.faculty}&year=${params.year}&clas=${name}`;
-    } else if(current === 'clas') {
-      url += `faculty=${params.faculty}&year=${params.year}&clas=${params.clas}&course=${name}`;
-    } else if(current === 'course') {
-      url += `faculty=${params.faculty}&year=${params.year}&clas=${params.clas}&course=${params.course}&section=${name}`;
-    }
-    console.log(url);
-    navigate(url);
+  console.log(url);
+
+  useEffect(() => {
+    const fetchFolders = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/show" + url);
+        setFolders(response.data.folders);
+        setExcels(response.data.excels);
+        setImages(response.data.images);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    };
+
+    fetchFolders();
+
+    const fetchFolderParent = async () => {
+      let requestData = {};
+
+      if (params.faculty) {
+        requestData.faculty = params.faculty;
+      }
+      if (params.year) {
+        requestData.year = params.year;
+      }
+      if (params.clas) {
+        requestData.class = params.clas;
+      }
+      if (params.course) {
+        requestData.course = params.course;
+      }
+      if (params.section) {
+        requestData.section = params.section;
+      }
+
+      try {
+        const response = await axios.post("http://127.0.0.1:8000/api/folder/current", requestData);
+        if(response.data.folder) {
+          setFolderCurrent(response.data.folder);
+        }
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    };
+
+    fetchFolderParent();
+  }, [folders]);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const handleFolderNameChange = (event) => {
+    setNewFolderName(event.target.value);
   };
+
+  const handleCreateFolder = async () => {
+    if(!newFolderName) {
+      alert('Tên thư mục không thể trống');
+      return;
+    }
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/folder/store", {
+        name: newFolderName,
+        parent_id: folderCurrent.id
+      });
+      setFolders([...folders, response.data.data]);
+      setNewFolderName("");
+      closeModal();
+    } catch (error) {
+      setError(error);
+    }
+  };
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    return format(date, 'h:mm a - MMM dd, yyyy');
+  };
+
+
+  const handleFolderClick = (name) => {
+    navigate('/show' + url + '&' + next + '=' + name);
+    console.log('/show' + url + '&' + next + '=' + name);
+  };
+
+  if(loading) {
+    return <div>Loading...</div>;
+  }
+
+  if(error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return ( 
     <div className={cx('wrapper')}>
-        <section className={cx("header")}>
+      <section className={cx("header")}>
         <input type="text" placeholder="Search" />
-        <button><i class="fa-solid fa-folder-plus"></i> Add folder</button>
+        {!params.course && <button onClick={openModal}><i class="fa-solid fa-folder-plus"></i> Add folder</button>}
+        {params.course && <button><i class="fa-solid fa-upload"></i> Enter score</button>}
       </section>
 
-      <section className={cx("folders")}>
-        <h3>Folders</h3>
-        <ul>
-          <li>
-            <ItemTitle name="Name" updated_at="Last edited" parent="Location" />
-          </li>
-          <li onClick={handleButtonClick('K23')}>
-            <ItemFolder name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
-          </li>
-          <li>
-            <ItemFolder name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
-          </li>
-          <li onClick={handleButtonClick('Java')}>
-            <ItemFolder name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
-          </li>
-          <li onClick={handleButtonClick('Java(9)')}>
-            <ItemFolder name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
-          </li>
-          <li onClick={handleButtonClick}>
-            <ItemFolder name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="/Khoa KHMT" />
-          </li>
-        </ul>
-      </section>
+      {folders.length > 0 && (
+        <section className={cx("folder")}>
+          <h3>Folder</h3>
+          <ul>
+            <li>
+              <ItemTitle name="Name" updated_at="Last edited" parent="File size" />
+            </li>
+            {folders.map((folder) => (
+              <li key={folder.id} onClick={() => handleFolderClick(folder.name)}>
+                <ItemFolder
+                  name={folder.name}
+                  updated_at={formatDate(folder.updated_at)}
+                  parent={"-"}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {(excels.length > 0 || images.length > 0) && (
+        <section className={cx("recently-file")}>
+          <h3>Files</h3>
+          <ul>
+            <li>
+              <ItemTitle name="Name" updated_at="Last edited" parent="File size" />
+            </li>
+            {excels.map((excel) => (
+              <li key={excel.id}>
+                <ItemExcel
+                  name={excel.path}
+                  updated_at={formatDate(excel.updated_at)}
+                  parent={"-"}
+                />
+              </li>
+            ))}
+            <hr></hr>
+            {images.map((image) => (
+              <li key={image.id}>
+                <ItemImage
+                  name={image.path}
+                  updated_at={formatDate(image.updated_at)}
+                  parent={"-"}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Modal thêm thư mục */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Add Folder"
+        ariaHideApp={false}
+        className={cx('modal')}
+      >
+        <h2>Add new folder</h2>
+        <input
+          type="text"
+          value={newFolderName}
+          onChange={handleFolderNameChange}
+          placeholder="Enter folder name"
+        />
+        <button onClick={handleCreateFolder}><i class="fa-solid fa-folder-plus"></i> Add</button>
+        {/* <button onClick={closeModal}>Cancel</button> */}
+      </Modal>
     </div>
   );
 }
