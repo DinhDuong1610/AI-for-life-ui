@@ -81,7 +81,7 @@ function Home() {
       </section>
 
       <section className={cx("suggested-folder")}>
-        <h3>Folders</h3>
+        <h4>Folders</h4>
         <ul>
           {folders.map((folder => (
             <li onClick={() => handleFolderClick(folder.name)} key={folder.id}>{folder.name}</li>
@@ -90,7 +90,7 @@ function Home() {
       </section>
 
       <section className={cx("recently-file")}>
-        <h3>Recently files</h3>
+        <h4>Recently files</h4>
         <ul>
           <li>
             <ItemTitle name="Name" updated_at="Last edited" parent="File size" />
@@ -110,6 +110,13 @@ function Home() {
           <li>
             <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
           </li>
+          <li>
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
+          </li>
+          <li>
+            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
+          </li>
+          
         </ul>
       </section>
 

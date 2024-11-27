@@ -7,6 +7,7 @@ import axios from "axios";
 import { format } from 'date-fns';
 
 import Modal from "react-modal";
+import { Breadcrumb } from "antd";
 
 import ItemFolder from "../../components/Item-folder";
 import ItemTitle from "../../components/Item-title";
@@ -163,9 +164,22 @@ function Show() {
         {params.course && <button><i class="fa-solid fa-upload"></i> Enter score</button>}
       </section>
 
+      <div className={cx("breadcrumb")}>
+        <Breadcrumb
+          items={[
+            params.faculty && { title: params.faculty, href: `?faculty=${params.faculty}` },
+            params.year && { title: params.year, href: `?faculty=${params.faculty}&year=${params.year}` },
+            params.clas && { title: params.clas, href: `?faculty=${params.faculty}&year=${params.year}&class=${params.clas}` },
+            params.course && { title: params.course, href: `?faculty=${params.faculty}&year=${params.year}&class=${params.clas}&course=${params.course}` },
+            params.section && { title: params.section, href: `?faculty=${params.faculty}&year=${params.year}&class=${params.clas}&course=${params.course}&section=${params.section}` },
+            // folderCurrent && { title: folderCurrent.name, href: '#' }, 
+          ].filter(Boolean)}
+        />
+      </div>
+
       {folders.length > 0 && (
-        <section className={cx("folder")}>
-          <h3>Folder</h3>
+        <section className={cx("folders")}>
+          <h4>Folders</h4>
           <ul>
             <li>
               <ItemTitle name="Name" updated_at="Last edited" parent="File size" />

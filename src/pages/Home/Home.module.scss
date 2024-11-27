@@ -3,6 +3,11 @@
   background: #fff;
   border-radius: 10px;
   height: 100%;
+  overflow-y: auto;
+
+  h4 {
+    font-weight: 600;
+  }
 }
 
 .header {
@@ -60,16 +65,19 @@
     justify-content: space-around;
 
     li {
-      padding: 20px 60px;
+      padding: 20px 20px;
       font-size: 20px;
       font-weight: 600;
       max-width: 250px;
       min-width: 250px;
+      min-height: 100px;
       background: #EFF3F98C;
       border-radius: 17px;
       box-shadow: 0px 1px 1px 0px #00000040;
       cursor: pointer;
       text-align: center;
+      display: flex;
+      align-items: center;
 
       &:hover {
         background: #EFF3F9;
