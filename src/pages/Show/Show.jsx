@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from 'date-fns';
+import { useDropzone } from 'react-dropzone';
 
 import Modal from "react-modal";
 import { Breadcrumb } from "antd";
@@ -148,6 +149,96 @@ function Show() {
     console.log('/show' + url + '&' + next + '=' + name);
   };
 
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false); 
+
+  const openUploadModal = () => setIsUploadModalOpen(true);
+  const closeUploadModal = () => setIsUploadModalOpen(false);
+
+  const onDrop = (acceptedFiles) => {
+    setSelectedFiles(acceptedFiles);
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: 'image/*', // Chỉ chấp nhận file ảnh
+    multiple: true // Cho phép tải lên nhiều file ảnh cùng lúc
+  });
+
+  // Hàm gửi ảnh lên server
+  const handleUploadImages = async () => {
+    const formData = new FormData();
+
+    // Thêm tất cả các file vào formData
+    selectedFiles.forEach(file => {
+      formData.append('image[]', file);
+    });
+
+      // Thêm folder_id vào formData
+    if (folderCurrent && folderCurrent.id) {
+      formData.append("folder_id", folderCurrent.id);
+    } else {
+      alert("Folder ID is required.");
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/image/store', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      // Kiểm tra phản hồi từ API và đóng modal
+      if (response.data) {
+        alert('Upload successful!');
+        closeUploadModal(); // Đóng modal sau khi upload thành công
+        handleResult();
+      } else {
+        alert('Upload failed!');
+        closeUploadModal();
+      }
+      setSelectedFiles([]);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      alert('Error uploading images');
+    }
+  };
+
+  const handleResult = async () => {
+    const formData = new FormData();
+
+    // Thêm tất cả các file vào formData
+    selectedFiles.forEach(file => {
+      formData.append('files', file);
+    });
+
+    console.log(formData);
+
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      console.log(response);
+
+      if (response.data && response.data.annotated_images) {
+        // Lưu các URL của annotated images vào một mảng
+        const imageUrls = response.data.annotated_images.map(image => image.url);
+  
+        // Chuyển hướng đến trang '/result' và truyền mảng imageUrls qua state
+        navigate('/result', { state: { imageUrls } });
+      } else {
+        alert('Result failed!');
+      }
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      alert('Error resulting');
+    }
+  };
+
   if(loading) {
     return <div>Loading...</div>;
   }
@@ -160,8 +251,10 @@ function Show() {
     <div className={cx('wrapper')}>
       <section className={cx("header")}>
         <input type="text" placeholder="Search" />
-        {!params.course && <button onClick={openModal}><i class="fa-solid fa-folder-plus"></i> Add folder</button>}
-        {params.course && <button><i class="fa-solid fa-upload"></i> Enter score</button>}
+        {!params.section && <button onClick={openModal}><i class="fa-solid fa-folder-plus"></i> Add folder</button>}
+        {params.section && (
+          <button onClick={openUploadModal}><i className="fa-solid fa-upload"></i> Enter score</button>
+        )}
       </section>
 
       <div className={cx("breadcrumb")}>
@@ -213,16 +306,26 @@ function Show() {
                 />
               </li>
             ))}
-            <hr></hr>
-            {images.map((image) => (
-              <li key={image.id}>
-                <ItemImage
-                  name={image.path}
-                  updated_at={formatDate(image.updated_at)}
-                  parent={"-"}
+            <li>
+                <ItemExcel
+                  name={"Thiết kế web (13) - HK2, 2023-2024 - Khoa KHMT"}
+                  updated_at={formatDate('2024-11-28 00:22:39')}
+                  parent={"15.7 MB"}
                 />
               </li>
-            ))}
+            <hr></hr>
+            <div className={cx("images")}>
+              {images.map((image) => (
+                <li key={image.id}>
+                  {/* <ItemImage
+                    name={image.path}
+                    updated_at={formatDate(image.updated_at)}
+                    parent={"-"}
+                  /> */}
+                  <img alt=">_<" src={`http://127.0.0.1:8000/storage/${image.path}`}></img>
+                </li>
+              ))}
+            </div>
           </ul>
         </section>
       )}
@@ -244,6 +347,38 @@ function Show() {
         />
         <button onClick={handleCreateFolder}><i class="fa-solid fa-folder-plus"></i> Add</button>
         {/* <button onClick={closeModal}>Cancel</button> */}
+      </Modal>
+
+
+       {/* Modal thêm ảnh (Enter score) */}
+       <Modal
+        isOpen={isUploadModalOpen}
+        onRequestClose={closeUploadModal}
+        contentLabel="Upload Images"
+        ariaHideApp={false}
+        className={cx('modal')}
+      >
+        <h2>Upload Images for Score</h2>
+
+        {/* Dropzone để tải lên ảnh */}
+        <div {...getRootProps()} className={cx('dropzone')}>
+          <input {...getInputProps()} />
+          <p>Drag & drop images here, or click to select images</p>
+        </div>
+
+        <div className={cx('file-list')}>
+          {selectedFiles.length > 0 && (
+            <ul>
+              {selectedFiles.map((file, index) => (
+                <li key={index}>{file.name}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <button onClick={handleUploadImages} className={cx('upload-button')}>
+          Upload
+        </button>
       </Modal>
     </div>
   );

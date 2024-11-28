@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
+import format from "date-fns/format";
 
 import ItemFolder from "../../components/Item-folder";
 import ItemTitle from "../../components/Item-title";
@@ -45,14 +46,17 @@ function Home() {
   };
 
   const handleCreateFolder = async () => {
-    if(!newFolderName) {
-      alert('Tên thư mục không thể trống');
+    if (!newFolderName) {
+      alert("Tên thư mục không thể trống");
       return;
     }
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/folder/store", {
-        name: newFolderName,
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/folder/store",
+        {
+          name: newFolderName,
+        }
+      );
       setFolders([...folders, response.data.data]);
       setNewFolderName("");
       closeModal();
@@ -62,30 +66,39 @@ function Home() {
   };
 
   const handleFolderClick = (name) => {
-    navigate('/show?faculty=' + name);
+    navigate("/show?faculty=" + name);
   };
 
-  if(loading) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  if(error) {
+  if (error) {
     return <div>Error: {error.message}</div>;
   }
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    return format(date, 'h:mm a - MMM dd, yyyy');
+  };
 
   return (
     <div className={cx("wrapper")}>
       <section className={cx("header")}>
         <input type="text" placeholder="Search" />
-        <button onClick={openModal}><i class="fa-solid fa-folder-plus"></i> Add folder</button>
+        <button onClick={openModal}>
+          <i class="fa-solid fa-folder-plus"></i> Add folder
+        </button>
       </section>
 
       <section className={cx("suggested-folder")}>
         <h4>Folders</h4>
         <ul>
-          {folders.map((folder => (
-            <li onClick={() => handleFolderClick(folder.name)} key={folder.id}>{folder.name}</li>
-          )))}
+          {folders.map((folder) => (
+            <li onClick={() => handleFolderClick(folder.name)} key={folder.id}>
+              {folder.name}
+            </li>
+          ))}
         </ul>
       </section>
 
@@ -93,30 +106,40 @@ function Home() {
         <h4>Recently files</h4>
         <ul>
           <li>
-            <ItemTitle name="Name" updated_at="Last edited" parent="File size" />
+            <ItemTitle
+              name="Name"
+              updated_at="Last edited"
+              parent="File size"
+            />
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
+            <ItemExcel
+              name="Thiết kế web (12) - HK2, 2023-2024 - Khoa KHMT"
+              updated_at={formatDate("2024-11-28 14:22:39")}
+              parent="21.3 MB"
+            />
           </li>
           <li>
-            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
+            <ItemImage
+              name="java9_01.jpg"
+              updated_at={formatDate("2024-11-27 14:01:39")}
+              parent="15.5 MB"
+            />
           </li>
           <li>
-            <ItemExcel name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
+            <ItemExcel
+              name="Lập trình java (6) - HK1, 2023-2024 - Khoa KHMT"
+              updated_at={formatDate("2024-11-26 11:02:39")}
+              parent="26.5 MB"
+            />
           </li>
           <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
+            <ItemImage
+              name="anh2.jpg"
+              updated_at={formatDate("2024-11-23 10:01:39")}
+              parent="11.5 MB"
+            />
           </li>
-          <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
-          </li>
-          <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
-          </li>
-          <li>
-            <ItemImage name="Khoá 2023" updated_at="7h30pm - Nov 20, 2024" parent="-" />
-          </li>
-          
         </ul>
       </section>
 
@@ -126,7 +149,7 @@ function Home() {
         onRequestClose={closeModal}
         contentLabel="Add Folder"
         ariaHideApp={false}
-        className={cx('modal')}
+        className={cx("modal")}
       >
         <h2>Add new folder</h2>
         <input
@@ -135,7 +158,9 @@ function Home() {
           onChange={handleFolderNameChange}
           placeholder="Enter folder name"
         />
-        <button onClick={handleCreateFolder}><i class="fa-solid fa-folder-plus"></i> Add</button>
+        <button onClick={handleCreateFolder}>
+          <i class="fa-solid fa-folder-plus"></i> Add
+        </button>
         {/* <button onClick={closeModal}>Cancel</button> */}
       </Modal>
     </div>

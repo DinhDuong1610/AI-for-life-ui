@@ -10,6 +10,7 @@
   font-size: 20px;
   font-weight: 500;
   position: relative;
+  margin-top: 20px;
 
   i {
     color: #00bd1f;
@@ -23,6 +24,10 @@
   .name {
     position: absolute;
     left: 100px;
+    max-width: 400px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .updated_at {
@@ -32,7 +37,7 @@
   
   .parent {
     position: relative;
-    left: 800px;
+    left: 780px;
   }
 
   &:hover {
