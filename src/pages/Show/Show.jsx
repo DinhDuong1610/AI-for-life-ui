@@ -4,8 +4,12 @@ import style from "./Show.module.scss";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { useDropzone } from 'react-dropzone';
+import LinearProgress from '@mui/material/LinearProgress';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import { Skeleton } from "@mui/material";
 
 import Modal from "react-modal";
 import { Breadcrumb } from "antd";
@@ -116,6 +120,9 @@ function Show() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("success");
+
   const handleFolderNameChange = (event) => {
     setNewFolderName(event.target.value);
   };
@@ -165,45 +172,183 @@ function Show() {
     multiple: true // Cho phép tải lên nhiều file ảnh cùng lúc
   });
 
-  // Hàm gửi ảnh lên server
-  const handleUploadImages = async () => {
-    const formData = new FormData();
+  const [countdownTime, setCountdownTime] = useState(30);
 
-    // Thêm tất cả các file vào formData
-    selectedFiles.forEach(file => {
-      formData.append('image[]', file);
+  const countdownInterval = setInterval(() => {
+    setCountdownTime((prevTime) => {
+      if (detectionProgress == 100) {
+        clearInterval(countdownInterval); 
+        setDetectionProgress(100);
+        return 0;
+      }
+      setDetectionProgress(100 - ((prevTime / 30) * 100));
+      return prevTime > 0 ? (prevTime - 1) : 0;
     });
+  }, 1000);
 
-      // Thêm folder_id vào formData
-    if (folderCurrent && folderCurrent.id) {
-      formData.append("folder_id", folderCurrent.id);
-    } else {
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  // Hàm gửi ảnh lên server
+  // const handleUploadImages = async () => {
+  //   const formData = new FormData();
+
+  //   // Thêm tất cả các file vào formData
+  //   selectedFiles.forEach(file => {
+  //     formData.append('image[]', file);
+  //     formData.append('name[]', file.name);
+  //   });
+
+  //     // Thêm folder_id vào formData
+  //   if (folderCurrent && folderCurrent.id) {
+  //     formData.append("folder_id", folderCurrent.id);
+  //   } else {
+  //     alert("Folder ID is required.");
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await axios.post('http://127.0.0.1:8000/api/image/store', formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //       onUploadProgress: (progressEvent) => {
+  //         const percentCompleted = Math.round((progressEvent.loaded * 200) / progressEvent.total);
+  //         setUploadProgress(percentCompleted);
+  //       },
+  //     });
+      
+  //     // Kiểm tra phản hồi từ API và đóng modal
+  //     if (response.data) {
+  //       closeUploadModal(); // Đóng modal sau khi upload thành công
+  //       setUploadProgress(0);
+  //       handleResult();
+  //     } else {
+  //       setAlertMessage("Upload failed!");
+  //       setAlertSeverity("error");
+  //       closeUploadModal();
+  //     }
+  //     setSelectedFiles([]);
+  //   } catch (error) {
+  //     setAlertMessage("Upload failed!");
+  //     setAlertSeverity("error");
+  //   }
+  // };
+
+  const handleUploadImages = async () => {
+    // Kiểm tra xem folderCurrent có hợp lệ không
+    if (!folderCurrent || !folderCurrent.id) {
       alert("Folder ID is required.");
       return;
     }
-
+  
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/image/store', formData, {
+      // Duyệt qua từng file trong selectedFiles và gửi từng file lên API
+      for (const file of selectedFiles) {
+        const formData = new FormData();
+  
+        // Thêm file và tên file vào formData
+        formData.append('image', file);
+        formData.append('name', file.name);
+  
+        // Thêm folder_id vào formData
+        formData.append("folder_id", folderCurrent.id);
+        formData.append("size", file.size);
+  
+        // Gửi yêu cầu API cho từng file
+        const response = await axios.post('http://127.0.0.1:8000/api/image/store', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+          },
+        });
+  
+        // Kiểm tra phản hồi từ API sau mỗi lần upload
+        if (response.data) {
+          // Nếu upload thành công, có thể làm gì đó với dữ liệu
+          console.log(`File ${file.name} uploaded successfully`);
+        } else {
+          // Nếu upload thất bại
+          setAlertMessage(`Upload failed for file: ${file.name}`);
+          setAlertSeverity("error");
+          break; // Dừng vòng lặp nếu một file upload thất bại
+        }
+      }
+  
+      // Đóng modal và reset trạng thái sau khi hoàn thành tất cả
+      closeUploadModal();
+      setUploadProgress(100);
+      handleResult();
+  
+      // Xóa danh sách file đã chọn
+      setSelectedFiles([]);
+  
+    } catch (error) {
+      // Xử lý lỗi nếu có
+      setAlertMessage("Upload failed!");
+      setAlertSeverity("error");
+    }
+  };
+  
+
+  // Hàm tải file từ API và tạo đối tượng File
+  const downloadAndCreateFile = async (url_download, excel_name) => {
+    try {
+      // Gọi API để lấy file dưới dạng blob (binary data)
+      const response = await axios.get(url_download, {
+        responseType: 'blob' // Đảm bảo phản hồi là blob
+      });
+
+      // Tạo đối tượng File từ Blob nhận được
+      const excel = new File([response.data], excel_name, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      console.log(excel);
+      // Lưu file vào state (hoặc bạn có thể xử lý trực tiếp ở đây)
+      setExcelData(excel);
+      // console.log(excelData);
+
+      // Gọi hàm upload file lên API
+      processExcelFile(excel);
+
+    } catch (error) {
+      console.error('Lỗi khi tải file:', error);
+    }
+  };
+
+  // Hàm gửi file lên API
+  const processExcelFile = async (excel) => {
+    if (!excel) {
+      console.error("Excel file data is missing!");
+      return;
+    }
+    console.log(excel);
+    try {
+      // Tạo đối tượng FormData để gửi file
+      const formData = new FormData();
+      formData.append('excel', excel); // Đưa file vào formData
+      formData.append('folder_id', folderCurrent.id);
+      formData.append('name', excel.name);
+      formData.append('size', excel.size);
+
+      console.log( 'formData: ',formData);
+
+      // Gửi file lên API (cập nhật URL API theo yêu cầu)
+      const response = await axios.post('http://127.0.0.1:8000/api/excel/store', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
-      // Kiểm tra phản hồi từ API và đóng modal
-      if (response.data) {
-        alert('Upload successful!');
-        closeUploadModal(); // Đóng modal sau khi upload thành công
-        handleResult();
-      } else {
-        alert('Upload failed!');
-        closeUploadModal();
-      }
-      setSelectedFiles([]);
+
+      // Xử lý phản hồi từ API
+      console.log('Dữ liệu đã được gửi thành công:', response.data);
     } catch (error) {
-      console.error("Error uploading images:", error);
-      alert('Error uploading images');
+      console.error('Lỗi khi gửi dữ liệu lên API:', error);
     }
   };
+
+  const [detectionProgress, setDetectionProgress] = useState(0);
+  const [excelData, setExcelData] = useState(null);
 
   const handleResult = async () => {
     const formData = new FormData();
@@ -220,11 +365,29 @@ function Show() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          
+          setDetectionProgress(50);
+        },
       });
       
       console.log(response);
 
       if (response.data && response.data.annotated_images) {
+        setDetectionProgress(100);
+        console.log(response.data.download_url);
+        console.log(response.data.title_results[0][0].ocr_text);
+        console.log(response.data.title_results[0][1].ocr_text);
+        console.log(response.data.title_results[0][2].ocr_text);
+
+        const title_khoa = response.data.title_results[0][0].ocr_text;
+        const title_nam = response.data.title_results[0][1].ocr_text;
+        const title_lop = response.data.title_results[0][2].ocr_text;
+
+        const excel_name = title_lop + ' - ' + title_nam + ' - ' + title_khoa + '.xlsx';
+
+        downloadAndCreateFile('http://127.0.0.1:5000' + response.data.download_url, excel_name);
         // Lưu các URL của annotated images vào một mảng
         const imageUrls = response.data.annotated_images.map(image => image.url);
   
@@ -239,16 +402,24 @@ function Show() {
     }
   };
 
-  if(loading) {
-    return <div>Loading...</div>;
-  }
-
   if(error) {
     return <div>Error: {error.message}</div>;
   }
 
   return ( 
     <div className={cx('wrapper')}>
+      <div className={cx("detection-progress")}>
+        {detectionProgress > 0 && detectionProgress < 100 && (
+          <LinearProgress color="success" variant="determinate" value={detectionProgress} />
+        )}
+      </div>
+
+      <div className={cx("upload-progress")}>
+          {uploadProgress > 0 && uploadProgress < 100 && (
+            <LinearProgress variant="determinate" value={uploadProgress} />
+          )}
+      </div>
+
       <section className={cx("header")}>
         <input type="text" placeholder="Search" />
         {!params.section && <button onClick={openModal}><i class="fa-solid fa-folder-plus"></i> Add folder</button>}
@@ -269,6 +440,17 @@ function Show() {
           ].filter(Boolean)}
         />
       </div>
+
+      {
+        loading && (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'left', alignItems: 'start', height: '100%', width: '100%', gap: 5 }}>
+            <Skeleton variant="text" width={1000} height={60} />
+            <Skeleton variant="rounded" width={300} height={300}/>
+            <Skeleton variant="rounded" width={300} height={300}/>
+            <Skeleton variant="rounded" width={300} height={300}/>
+          </Box>
+        )
+      }
 
       {folders.length > 0 && (
         <section className={cx("folders")}>
@@ -300,19 +482,19 @@ function Show() {
             {excels.map((excel) => (
               <li key={excel.id}>
                 <ItemExcel
-                  name={excel.path}
+                  name={excel.name}
                   updated_at={formatDate(excel.updated_at)}
-                  parent={"-"}
+                  parent={excel.size/1000 + " MB"}
                 />
               </li>
             ))}
-            <li>
+            {/* <li>
                 <ItemExcel
                   name={"Thiết kế web (13) - HK2, 2023-2024 - Khoa KHMT"}
                   updated_at={formatDate('2024-11-28 00:22:39')}
                   parent={"15.7 MB"}
                 />
-              </li>
+              </li> */}
             <hr></hr>
             <div className={cx("images")}>
               {images.map((image) => (
@@ -358,12 +540,14 @@ function Show() {
         ariaHideApp={false}
         className={cx('modal')}
       >
+
         <h2>Upload Images for Score</h2>
 
         {/* Dropzone để tải lên ảnh */}
         <div {...getRootProps()} className={cx('dropzone')}>
           <input {...getInputProps()} />
-          <p>Drag & drop images here, or click to select images</p>
+          <p className="mb-0">Drag & drop images here</p>
+          <div className="text-center"><span>or</span> <b className="text-primary" style={{cursor: 'pointer'}}>Choose Images</b></div>
         </div>
 
         <div className={cx('file-list')}>
@@ -376,7 +560,7 @@ function Show() {
           )}
         </div>
 
-        <button onClick={handleUploadImages} className={cx('upload-button')}>
+        <button onClick={handleUploadImages} className={cx('upload-button', 'mt-3')}>
           Upload
         </button>
       </Modal>

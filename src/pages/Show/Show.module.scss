@@ -4,6 +4,7 @@
   border-radius: 10px;
   height: 100%;
   overflow-y: auto;
+  position: relative;
 
   ul {
     margin: 0;
@@ -175,4 +176,20 @@
 /* Hiệu ứng hover cho nút Cancel */
 .modal .cancel-button:hover {
   background-color: #e2e6ea;
+}
+
+.detection-progress {
+  position: absolute;
+  width: 100%;
+  z-index: 999;
+  top: 0;
+  margin-left: -50px;
+}
+
+.upload-progress {
+  position: absolute;
+  width: 100%;
+  z-index: 990;
+  top: 0;
+  margin-left: -50px;
 }
