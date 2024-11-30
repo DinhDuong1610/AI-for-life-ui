@@ -115,7 +115,7 @@ function Show() {
     };
 
     fetchFolderParent();
-  }, [folders]);
+  }, [current]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -171,20 +171,6 @@ function Show() {
     accept: 'image/*', // Chỉ chấp nhận file ảnh
     multiple: true // Cho phép tải lên nhiều file ảnh cùng lúc
   });
-
-  const [countdownTime, setCountdownTime] = useState(30);
-
-  const countdownInterval = setInterval(() => {
-    setCountdownTime((prevTime) => {
-      if (detectionProgress == 100) {
-        clearInterval(countdownInterval); 
-        setDetectionProgress(100);
-        return 0;
-      }
-      setDetectionProgress(100 - ((prevTime / 30) * 100));
-      return prevTime > 0 ? (prevTime - 1) : 0;
-    });
-  }, 1000);
 
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -291,8 +277,9 @@ function Show() {
       setAlertSeverity("error");
     }
   };
-  
 
+  let excelUrl = '';
+  
   // Hàm tải file từ API và tạo đối tượng File
   const downloadAndCreateFile = async (url_download, excel_name) => {
     try {
@@ -340,6 +327,8 @@ function Show() {
         },
       });
 
+      // excelUrl = 'http://localhost:8000/storage/' + response.data.excel.path;
+
       // Xử lý phản hồi từ API
       console.log('Dữ liệu đã được gửi thành công:', response.data);
     } catch (error) {
@@ -347,7 +336,23 @@ function Show() {
     }
   };
 
-  const [detectionProgress, setDetectionProgress] = useState(0);
+  const fetchExcel = async (url, name) => {
+    try {
+      const fileUrl = "http://127.0.0.1:8000/storage/" + url;
+      
+      // Tạo thẻ <a> và kích hoạt download
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = name; // Lấy tên file từ đường dẫn
+      document.body.appendChild(link);
+      link.click(); // Kích hoạt download
+      document.body.removeChild(link);
+    } catch (error) {
+      setError(error);
+    }
+  };
+
+  const [detectionProgress, setDetectionProgress] = useState(false);
   const [excelData, setExcelData] = useState(null);
 
   const handleResult = async () => {
@@ -361,6 +366,8 @@ function Show() {
     console.log(formData);
 
     try {
+      setDetectionProgress(true);
+
       const response = await axios.post('http://127.0.0.1:5000/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -368,31 +375,33 @@ function Show() {
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           
-          setDetectionProgress(50);
+          setDetectionProgress(true);
         },
       });
       
       console.log(response);
 
       if (response.data && response.data.annotated_images) {
-        setDetectionProgress(100);
-        console.log(response.data.download_url);
-        console.log(response.data.title_results[0][0].ocr_text);
-        console.log(response.data.title_results[0][1].ocr_text);
-        console.log(response.data.title_results[0][2].ocr_text);
-
+        // console.log(response.data.download_url);
+        // console.log(response.data.title_results[0][1].ocr_text);
+        // console.log(response.data.title_results[0][0].ocr_text);
+        // console.log(response.data.title_results[0][2].ocr_text);
+        
         const title_khoa = response.data.title_results[0][0].ocr_text;
-        const title_nam = response.data.title_results[0][1].ocr_text;
-        const title_lop = response.data.title_results[0][2].ocr_text;
-
+        const title_lop = response.data.title_results[0][1].ocr_text;
+        const title_nam = response.data.title_results[0][2].ocr_text;
+        
         const excel_name = title_lop + ' - ' + title_nam + ' - ' + title_khoa + '.xlsx';
-
+        
         downloadAndCreateFile('http://127.0.0.1:5000' + response.data.download_url, excel_name);
         // Lưu các URL của annotated images vào một mảng
         const imageUrls = response.data.annotated_images.map(image => image.url);
-  
+        excelUrl = 'http://127.0.0.1:5000/' + response.data.download_url;
+        setDetectionProgress(false);
+
+        console.log('excelUrl: ', excelUrl);
         // Chuyển hướng đến trang '/result' và truyền mảng imageUrls qua state
-        navigate('/result', { state: { imageUrls } });
+        navigate('/result', { state: { imageUrls, excelUrl } });
       } else {
         alert('Result failed!');
       }
@@ -409,8 +418,8 @@ function Show() {
   return ( 
     <div className={cx('wrapper')}>
       <div className={cx("detection-progress")}>
-        {detectionProgress > 0 && detectionProgress < 100 && (
-          <LinearProgress color="success" variant="determinate" value={detectionProgress} />
+        {detectionProgress && (
+          <LinearProgress color="success"/>
         )}
       </div>
 
@@ -480,12 +489,13 @@ function Show() {
               <ItemTitle name="Name" updated_at="Last edited" parent="File size" />
             </li>
             {excels.map((excel) => (
-              <li key={excel.id}>
+              <li key={excel.id} onClick={() => fetchExcel(excel.path, excel.name)}>
                 <ItemExcel
                   name={excel.name}
                   updated_at={formatDate(excel.updated_at)}
                   parent={excel.size/1000 + " MB"}
                 />
+                {console.log('http://localhost:8000/storage/' + excel.path)}
               </li>
             ))}
             {/* <li>
@@ -505,6 +515,7 @@ function Show() {
                     parent={"-"}
                   /> */}
                   <img alt=">_<" src={`http://127.0.0.1:8000/storage/${image.path}`}></img>
+                  <span className={cx("tooltip")}>{image.name}</span>
                 </li>
               ))}
             </div>

@@ -34,33 +34,33 @@ function Trash() {
             />
           </li>
           <li className={cx("today")}>Today</li>
-          <li>
-            <ItemImage
-              name="tmp.jpg"
-              updated_at={formatDate("2024-10-28 14:22:39")}
-              parent="11.3 MB"
-            />
-          </li>
-          <li>
-            <ItemImage
-              name="234p23.jpg"
-              updated_at={formatDate("2024-10-27 14:01:39")}
-              parent="15.5 MB"
-            />
-          </li>
           <hr></hr>
           <li>
-            <ItemExcel
-              name="Lập trình java (10) - HK1, 2020-2021 - Khoa KHMT"
-              updated_at={formatDate("2024-10-26 11:02:39")}
-              parent="26.5 MB"
+            <ItemImage
+              name="DACN1(14)_1.png"
+              updated_at={formatDate("2024-11-29 23:13:11")}
+              parent="137.803 MB"
             />
           </li>
           <li>
             <ItemImage
-              name="anh2.jpg"
-              updated_at={formatDate("2024-10-23 10:01:39")}
-              parent="11.5 MB"
+              name="DACN1(14)_2.png"
+              updated_at={formatDate("2024-11-29 23:13:11")}
+              parent="140.823 MB"
+            />
+          </li>
+          <li>
+            <ItemImage
+              name="DACN1(14)_3.png"
+              updated_at={formatDate("2024-11-29 23:13:11")}
+              parent="120.353 MB"
+            />
+          </li>
+          <li>
+            <ItemExcel
+              name="Đồ án chuyên ngành 1 (IT) - Hội đồng 14 - MC - Học kỳ 2, Năm học 2023-2024 - KHOA KHOA HỌC MÁY TÍNH.xlsx"
+              updated_at={formatDate("2024-11-29 23:13:59")}
+              parent="6.555 MB"
             />
           </li>
         </ul>

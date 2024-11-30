@@ -37,10 +37,35 @@
   
   .parent {
     position: relative;
-    left: 780px;
+    left: 755px;
   }
 
   &:hover {
     background: #EFF3F9;
   }
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 520px;
+  background-color: rgb(185, 185, 185);
+  color: #413f3f;
+  height: 50px;
+  text-align: center;
+  border-radius: 5px;
+  padding: 3px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Vị trí của tooltip so với element */
+  left: -800px;
+  top: 40px;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+}
+
+.item-excel:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
 }

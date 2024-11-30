@@ -2,7 +2,7 @@ import classNames from "classnames/bind";
 import style from "./Result.module.scss";
 
 import * as React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import Box from "@mui/material/Box";
@@ -11,6 +11,8 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Modal from "react-modal";
+import axios from "axios";
+import * as XLSX from "xlsx";
 
 const cx = classNames.bind(style);
 
@@ -20,13 +22,62 @@ function Result() {
   const [selectedImage, setSelectedImage] = useState(""); // State để lưu ảnh đã chọn trong modal
   const [scale, setScale] = useState(0.9); // State để lưu tỷ lệ phóng to ảnh
   const imageRef = useRef(null); // Dùng ref để tham chiếu đến ảnh trong modal
+  const [excelData, setExcelData] = useState("");
+  const [error, setError] = useState(null);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const location = useLocation();
-  const { imageUrls } = location.state || {}; // Lấy mảng imageUrls từ state
+  const { imageUrls, excelUrl } = location.state || {}; // Lấy mảng imageUrls từ state
+  const [colors, setColors] = useState([]); // Thêm state để lưu màu sắc các ô
+
+
+  useEffect(() => {
+    const fetchExcel = async () => {
+      try {
+        // Tải file Excel từ server
+        console.log(excelUrl);
+        const response = await axios.get(excelUrl, {
+          responseType: "arraybuffer",
+        });
+  
+        // Đọc file Excel từ buffer
+        const data = new Uint8Array(response.data);
+        const workbook = XLSX.read(data, { type: "array" });
+  
+        // Giả sử bạn chỉ cần sheet đầu tiên
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        
+        // Đọc dữ liệu và màu sắc của từng ô
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        
+        // Lấy màu của từng ô (dựng đối tượng color cho mỗi cell)
+        const newColors = [];
+        for (let rowIndex = 0; rowIndex < jsonData.length; rowIndex++) {
+          const row = jsonData[rowIndex];
+          const rowColors = [];
+          for (let colIndex = 0; colIndex < row.length; colIndex++) {
+            const cell = worksheet[XLSX.utils.encode_cell({ r: rowIndex, c: colIndex })]; // Lấy cell bằng tọa độ (row, col)
+            const cellColor = cell && cell.s && cell.s.fill ? cell.s.fill.fgColor : null; // Lấy màu nền
+            rowColors.push(cellColor ? cellColor.rgb : null); // Nếu có màu thì lấy mã màu hex (RGB)
+          }
+          newColors.push(rowColors);
+        }
+  
+        // Lưu dữ liệu và màu vào state
+        setExcelData(jsonData);
+        setColors(newColors); // Cập nhật màu sắc vào state
+      } catch (error) {
+        setError("Failed to fetch or parse Excel file.");
+      }
+    };
+  
+    fetchExcel();
+  }, [excelUrl]);
+  
+  
 
   // Mở modal và set ảnh đã chọn
   const openModal = (url) => {
@@ -69,7 +120,7 @@ function Result() {
                   key={index}
                   src={`http://127.0.0.1:5000/${url}`}
                   alt={`Annotated Image ${index}`}
-                  onClick={() => openModal(url)} 
+                  onClick={() => openModal(url)}
                 />
               ))
             ) : (
@@ -77,7 +128,42 @@ function Result() {
             )}
           </div>
         </TabPanel>
-        <TabPanel value="2">Item Two</TabPanel>
+        <TabPanel value="2">
+          <div>
+          {excelData ? (
+  <div className="table-container">
+    <table>
+      <thead>
+        <tr>
+          {excelData[0].map((header, index) => (
+            <td key={index}>{header}</td>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {excelData.slice(1).map((row, rowIndex) => (
+          <tr key={rowIndex}>
+            {row.map((cell, colIndex) => (
+              <td
+                key={colIndex}
+                style={{
+                  backgroundColor: colors[rowIndex]?.[colIndex] || "transparent", // Áp dụng màu nền từ colors
+                }}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+) : (
+  <p>Loading Excel data...</p>
+)}
+
+          </div>
+        </TabPanel>
       </TabContext>
 
       {/* Modal hiển thị ảnh */}
@@ -90,7 +176,9 @@ function Result() {
         overlayClassName={cx("overlay")} // Overlay tùy chỉnh nếu cần
       >
         <div className={cx("modal-content")}>
-          <button onClick={closeModal} className={cx("close-btn")}>X</button>
+          <button onClick={closeModal} className={cx("close-btn")}>
+            X
+          </button>
           <img
             src={`http://127.0.0.1:5000/${selectedImage}`}
             alt="Full Screen"

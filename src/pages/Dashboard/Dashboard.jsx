@@ -38,21 +38,21 @@ function Dashboard() {
         <div className={cx("card")}>
           <FaUsers className={cx("card-icon")} />
           <h3>Classes</h3>
-          <div className={cx("number")}>15</div>
+          <div className={cx("number")}>5</div>
           <div className={cx("subtitle")}>Total classes</div>
         </div>
   
         <div className={cx("card")}>
           <FaBook className={cx("card-icon")} />
           <h3>Courses</h3>
-          <div className={cx("number")}>8</div>
+          <div className={cx("number")}>4</div>
           <div className={cx("subtitle")}>Total courses</div>
         </div>
   
         <div className={cx("card")}>
           <FaChalkboardTeacher className={cx("card-icon")} />
           <h3>Sections</h3>
-          <div className={cx("number")}>5</div>
+          <div className={cx("number")}>11</div>
           <div className={cx("subtitle")}>Total sections</div>
         </div>
       </div>

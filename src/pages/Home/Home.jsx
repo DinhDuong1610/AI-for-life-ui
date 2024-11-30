@@ -6,6 +6,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import format from "date-fns/format";
+import { useDropzone } from "react-dropzone";
+import LinearProgress from "@mui/material/LinearProgress";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import { Skeleton } from "@mui/material";
 
 import ItemFolder from "../../components/Item-folder";
 import ItemTitle from "../../components/Item-title";
@@ -69,10 +74,6 @@ function Home() {
     navigate("/show?faculty=" + name);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -100,45 +101,36 @@ function Home() {
             </li>
           ))}
         </ul>
+        {
+        loading && (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'left', alignItems: 'start', height: '100%', width: '100%', gap: 5 }}>
+            {/* <Skeleton variant="text" width={1000} height={60} /> */}
+            <Skeleton variant="rounded" width={320} height={100}/>
+            <Skeleton variant="rounded" width={320} height={100}/>
+            <Skeleton variant="rounded" width={320} height={100}/>
+          </Box>
+        )
+      }
       </section>
 
       <section className={cx("recently-file")}>
         <h4>Recently files</h4>
         <ul>
           <li>
-            <ItemTitle
-              name="Name"
-              updated_at="Last edited"
-              parent="File size"
-            />
+            <ItemTitle name="Name" updated_at="Last edited" parent="File size" />
           </li>
           <li>
-            <ItemExcel
-              name="Thiết kế web (12) - HK2, 2023-2024 - Khoa KHMT"
-              updated_at={formatDate("2024-11-28 14:22:39")}
-              parent="21.3 MB"
-            />
+            <ItemExcel name="Tiếng anh chuyên ngành 2 (IT) (5) - Học kỳ 2, Năm học 2023-2024 - KHOA KHOA HỌC MÁY TÍNH.xlsx" updated_at={formatDate('2024-11-29 22:27:23')} parent="7.720 MB" />
           </li>
           <li>
-            <ItemImage
-              name="java9_01.jpg"
-              updated_at={formatDate("2024-11-27 14:01:39")}
-              parent="15.5 MB"
-            />
+            <ItemImage name="TACN2(5)_4.png" updated_at={formatDate('2024-11-29 22:25:52')} parent="123.367 MB" />
+          </li>
+          <hr></hr>
+          <li>
+            <ItemExcel name="Lập trình Java (9) - Học kỳ 2, Năm học 2023-2024 - KHOA KHOA HỌC MÁY TÍNH.xlsx" updated_at={formatDate('2024-11-29 21:03:20')} parent="4.797 MB" />
           </li>
           <li>
-            <ItemExcel
-              name="Lập trình java (6) - HK1, 2023-2024 - Khoa KHMT"
-              updated_at={formatDate("2024-11-26 11:02:39")}
-              parent="26.5 MB"
-            />
-          </li>
-          <li>
-            <ItemImage
-              name="anh2.jpg"
-              updated_at={formatDate("2024-11-23 10:01:39")}
-              parent="11.5 MB"
-            />
+            <ItemImage name="Java9_4.png" updated_at={formatDate('2024-11-29 21:01:17')} parent="170.939 MB" />
           </li>
         </ul>
       </section>

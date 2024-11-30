@@ -23,7 +23,7 @@ function Recent() {
       </section>
 
       <section className={cx("recently-file")}>
-        <h3>Recently files</h3>
+        <h3><b>Recently files</b></h3>
         <ul>
           <li>
             <ItemTitle name="Name" updated_at="Last edited" parent="File size" />
@@ -32,17 +32,17 @@ function Recent() {
             Today
           </li>
           <li>
-            <ItemExcel name="Thiết kế web (12) - HK2, 2023-2024 - Khoa KHMT" updated_at={formatDate('2024-11-28 14:22:39')} parent="21.3 MB" />
+            <ItemExcel name="Tiếng anh chuyên ngành 2 (IT) (5) - Học kỳ 2, Năm học 2023-2024 - KHOA KHOA HỌC MÁY TÍNH.xlsx" updated_at={formatDate('2024-11-30 06:24:08')} parent="7.720 MB" />
           </li>
           <li>
-            <ItemImage name="java9_01.jpg" updated_at={formatDate('2024-11-27 14:01:39')} parent="15.5 MB" />
+            <ItemImage name="TACN2(5)_4.png" updated_at={formatDate('2024-11-30 06:04:01')} parent="123.367 MB" />
           </li>
           <hr></hr>
           <li>
-            <ItemExcel name="Lập trình java (6) - HK1, 2023-2024 - Khoa KHMT" updated_at={formatDate('2024-11-26 11:02:39')} parent="26.5 MB" />
+            <ItemExcel name="Lập trình Java (9) - Học kỳ 2, Năm học 2023-2024 - KHOA KHOA HỌC MÁY TÍNH.xlsx" updated_at={formatDate('2024-11-29 21:03:20')} parent="4.797 MB" />
           </li>
           <li>
-            <ItemImage name="anh2.jpg" updated_at={formatDate('2024-11-23 10:01:39')} parent="11.5 MB" />
+            <ItemImage name="Java9_4.png" updated_at={formatDate('2024-11-29 21:01:17')} parent="170.939 MB" />
           </li>
         </ul>
       </section>
