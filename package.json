@@ -23,6 +23,7 @@
     "react-modal": "^3.16.1",
     "react-router-dom": "^7.0.1",
     "react-scripts": "5.0.1",
+    "react-toastify": "^11.0.2",
     "react-tooltip": "^5.28.0",
     "recharts": "^2.13.3",
     "web-vitals": "^2.1.4",
