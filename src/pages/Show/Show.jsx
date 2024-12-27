@@ -122,10 +122,13 @@ function Show() {
       } catch (error) {
         setError(error);
         setLoading(false);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchFolderParent();
+
   }, [current]);
 
   const openModal = () => setIsModalOpen(true);
@@ -435,7 +438,7 @@ function Show() {
         />
       </div>
 
-      {loading && (
+      {/* {loading && (
         <Box
           sx={{
             display: "flex",
@@ -452,7 +455,7 @@ function Show() {
           <Skeleton variant="rounded" width={300} height={300} />
           <Skeleton variant="rounded" width={300} height={300} />
         </Box>
-      )}
+      )} */}
 
       {folders.length > 0 && (
         <section className={cx("folders")}>
