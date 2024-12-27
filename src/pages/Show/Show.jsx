@@ -265,7 +265,11 @@ function Show() {
               .replace(/O/g, "0")
               .replace(/S/g, "5")
               .replace(/1T/g, "IT");
-            msv = msv.slice(0, 2) + 'IT' + msv.slice(4);
+            if(msv[2] != 'N') {
+              msv = msv.slice(0, 2) + 'IT' + msv.slice(4);
+            } else {
+              msv = msv.slice(0, 2) + 'NS' + msv.slice(4);
+            }
           }
           if (score) {
             score = score.replace(/O/g, "0").replace(/S/g, "5");
@@ -459,7 +463,6 @@ function Show() {
 
       {folders.length > 0 && (
         <section className={cx("folders")}>
-          <h4>Folders</h4>
           <ul>
             <li>
               <ItemTitle
@@ -476,7 +479,7 @@ function Show() {
                 <ItemFolder
                   name={folder.name}
                   updated_at={formatDate(folder.updated_at)}
-                  parent={"-"}
+                  parent={""}
                 />
               </li>
             ))}

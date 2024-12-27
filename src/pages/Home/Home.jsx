@@ -93,7 +93,6 @@ function Home() {
       </section>
 
       <section className={cx("suggested-folder")}>
-        <h4>Folders</h4>
         <ul>
           {folders.map((folder) => (
             <li onClick={() => handleFolderClick(folder.name)} key={folder.id}>
@@ -114,23 +113,22 @@ function Home() {
       </section>
 
       <section className={cx("recently-file")}>
-        <h4>Recently files</h4>
+        <h4>Recently </h4>
         <ul>
           <li>
             <ItemTitle name="Name" updated_at="Last edited" parent="File size" />
           </li>
           <li>
-            <ItemExcel name="Tiếng anh chuyên ngành 2 (IT) (5) - Học kỳ 2, Năm học 2023-2024 - KHOA KHOA HỌC MÁY TÍNH.xlsx" updated_at={formatDate('2024-11-29 22:27:23')} parent="7.720 MB" />
+            <ItemFolder name="Đồ án chuyên ngành 3 - Hội đồng 3-SE" updated_at={formatDate('2024-12-28 22:27:23')} parent="" />
           </li>
           <li>
-            <ItemImage name="TACN2(5)_4.png" updated_at={formatDate('2024-11-29 22:25:52')} parent="123.367 MB" />
-          </li>
-          <hr></hr>
-          <li>
-            <ItemExcel name="Lập trình Java (9) - Học kỳ 2, Năm học 2023-2024 - KHOA KHOA HỌC MÁY TÍNH.xlsx" updated_at={formatDate('2024-11-29 21:03:20')} parent="4.797 MB" />
+            <ItemFolder name="Tiếng anh chuyên ngành 2 (IT) (1)_GIT" updated_at={formatDate('2024-12-28 20:27:23')} parent="" />
           </li>
           <li>
-            <ItemImage name="Java9_4.png" updated_at={formatDate('2024-11-29 21:01:17')} parent="170.939 MB" />
+            <ItemFolder name="Thiết kế web (13)" updated_at={formatDate('2024-12-28 20:20:23')} parent="" />
+          </li>
+          <li>
+            <ItemFolder name="Đồ án chuyên ngành 3 - Hội đồng 5-SE" updated_at={formatDate('2024-12-27 12:17:23')} parent="" />
           </li>
         </ul>
       </section>

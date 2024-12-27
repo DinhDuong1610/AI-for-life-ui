@@ -9,11 +9,12 @@ function Sidebar() {
   return ( 
     <div className={cx('wrapper')}>
       <div className={cx('header')}>
-        <img src="assets/images/icon_01.png" alt="Logo" />
-        <span>VKU</span>
+        {/* <img src="assets/images/icon_01.png" alt="Logo" />
+        <span>VKU</span> */}
+        <img src="assets/images/logo-vku.svg" alt="Logo" />
       </div>
       <div className={cx('about')}>
-        <span>Welcome <b>Admin</b></span>
+        Welcome
       </div>
       <div className={cx('menu')}>
         <ul>
@@ -24,23 +25,24 @@ function Sidebar() {
             </Link>
           </li>
           <li>
-            <Link to="/recent">
-              <i class="fa-solid fa-clock-rotate-left"></i>
-              <span>Recent</span>
-            </Link>
-          </li>
-          <li>
             <Link to="/dashboard">
               <i class="fa-solid fa-square-poll-vertical"></i>
               <span>Dashboard</span>
             </Link>
           </li>
           <li>
+            <Link to="/recent">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <span>Recent</span>
+            </Link>
+          </li>
+
+          {/* <li>
             <Link to="/trash">
               <i class="fa-solid fa-trash"></i>
               <span>Trash</span>
             </Link>
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>
